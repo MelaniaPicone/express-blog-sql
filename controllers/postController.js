@@ -15,17 +15,33 @@ const index = (req, res) => {
 
 // show
 const show = (req, res) => {
-const id= parseInt(req.params.id);
+const {id} = req.params;
 
-// recuper il post con l'id passato come parametro
-const post = posts.find(item => item.id === id);
+const postSql = "SELECT * FROM posts WHERE id = ?";
 
-// verifico se il post non esiste
-if (!post){
-  return res.status(404).json({error: "404 pagina non trovata", messagge:"il post non è presente"})
-};
+connection.query(postSql, [id], (err, resultPost) => 
+{
 
-res.json(post);
+  if(err) return res.status(500).json ({error: "error"});
+ if(resultPost.length === 0) return res.status(404).json ({error: "post non trovato"});
+
+ const tagsSql ="SELECT * FROM tags JOIN post_tag ON post_tag.tag_id = tags.id WHERE post_tag.post_id = ?";
+
+ connection.query(tagsSql, [id], (err, resultsTags) => {
+   if(err) return res.status(500).json ({error: "error"});
+
+   const postWhithTags = {
+    ...resultPost[0],
+    tags: resultsTags
+   };
+
+  
+res.json(postWhithTags);
+
+
+ });
+
+});
 
 };
 
