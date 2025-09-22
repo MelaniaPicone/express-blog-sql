@@ -1,19 +1,15 @@
-// importo l'array dei posts
-const posts = require('../data/posts.js');
+// connessione al db
+const connection = require('../data/db.js');
 
 // index
 const index = (req, res) => {
-  // recupero parametri passati da query string
-  const tag = req.query.tag;
 
-  // definizione array da restituire
-  const filteredPosts = posts;
-
-  // controlliamo il valore di title: se diverso da undefined eseguo il filtraggio
-  if (tag){
-    filteredPosts = posts.filter(item => {item.tags.includes(tag)});
- }
-res.json(posts);
+  const sql = "SELECT * FROM posts";
+  connection.query(sql, (err, results) => {
+ if (err) 
+  return res.status (500).json({error: 'errore'});
+  res.json(results)
+  });
 
 };
 
