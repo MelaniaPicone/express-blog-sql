@@ -87,14 +87,16 @@ res.send(`Modifica parziale dei post con id ${id}`);
 
 // destroy
 const destroy = (req, res) => {
-const id = parseInt(req.params.id);
 
-const post = posts.find(item => item.id === id);
+  const { id } = req.params;
+const sql = "SELECT * FROM posts WHERE id = ?";
+connection.query(sql, [id], (err, results) => {
 
-posts.splice(post.indexOf(post), 1);
+  if(err) return res.status(500).json ({error: "errore"});
 
 res.sendStatus(204);
 
+});
 };
 
 // esporto
